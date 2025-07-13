@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-vindo(a) ao App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define a fonte Inter para todo o corpo */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen flex flex-col items-center justify-center p-4">
+    <!-- Container principal para centralizar o conteúdo -->
+    <div class="w-full max-w-5xl bg-white rounded-lg p-8 md:p-10">
+        <!-- Mensagem de Boas-Vindas -->
+<h1 class="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-10 md:mb-14 rounded-lg p-6 bg-blue-50 shadow-sm">
+    Bem-vindo(a), <span id="userName">{{ user.first_name|default:user.username }}</span>!
+</h1>
+
+        <!-- Grid de Botões -->
+        <div class="grid grid-cols-2 gap-6 md:gap-8 lg:grid-cols-4">
+            <!-- Botão: Cadastrar usuários -->
+            <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus mb-3">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>
+                </svg>
+                Cadastrar Colaborador
+            </button>
+
+            <!-- Botão: Listagem -->
+            <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list mb-3">
+                    <line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>
+                </svg>
+                Listagem
+            </button>
+
+            <!-- Botão: Férias -->
+            <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun mb-3">
+                    <circle cx="12" cy="12" r="8"/><line x1="12" x2="12" y1="2" y2="4"/><line x1="12" x2="12" y1="20" y2="22"/><line x1="2" x2="4" y1="12" y2="12"/><line x1="20" x2="22" y1="12" y2="12"/><line x1="4.22" x2="5.64" y1="4.22" y2="5.64"/><line x1="18.36" x2="19.78" y1="18.36" y2="19.78"/><line x1="4.22" x2="5.64" y1="19.78" y2="18.36"/><line x1="18.36" x2="19.78" y1="5.64" y2="4.22"/>
+                </svg>
+                Férias
+            </button>
+
+            <!-- Botão: Folha de ponto -->
+            <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check mb-3">
+                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>
+                </svg>
+                Folha de ponto
+            </button>
+
+            <!-- Botão: Aniversariantes do mês -->
+            <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cake mb-3">
+                    <path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1"/><path d="M2 21h20"/><path d="M7 11V7a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v4"/>
+                </svg>
+                Aniversariantes do mês
+            </button>
+
+            <!-- Botão: Lista Geral -->
+            <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users mb-3">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                Lista Geral
+            </button>
+
+            <!-- Botão: Em Breve -->
+            <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hourglass mb-3">
+                    <path d="M5 22h14"/><path d="M5 2H19"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/>
+                </svg>
+                Em Breve
+            </button>
+
+            <!-- Botão: Sair (com link de logout) -->
+<a href="{% url 'tarefas:logout' %}" class="flex flex-col items-center justify-center p-6 md:p-8 bg-red-200 text-red-800 text-lg font-semibold rounded-xl shadow-md hover:bg-red-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out mb-3">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="17 16 22 12 17 8"/><line x1="22" x2="10" y1="12" y2="12"/>
+    </svg>
+    Sair
+</a>
+
+        </div>
+    </div>
+
+    <script>
+        // Função para simular a inserção do nome do usuário (no Django, você passaria isso pelo contexto)
+        window.onload = function() {
+            const userNameElement = document.getElementById('userName');
+            // Exemplo: Substitua 'Nome do Usuário' pela variável do Django, por exemplo: "{{ user.first_name }}"
+            // Para testar no navegador, você pode definir um nome fixo ou usar um prompt
+            // userNameElement.textContent = prompt("Digite seu nome:", "Usuário");
+        };
+    </script>
+</body>
+</html>
