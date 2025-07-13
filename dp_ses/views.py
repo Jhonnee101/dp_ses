@@ -1,7 +1,4 @@
-from django.http import HttpResponse
-
-def teste_view(request):
-    return HttpResponse("Teste")
+from django.shortcuts import redirect
 
 def index_view(request):
-    return HttpResponse("Bem vindo")
+    return redirect('/auth/login/')

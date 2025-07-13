@@ -26,7 +26,7 @@ def login(request):
 
 @login_required(login_url="auth/login/")
 def home(request):
-    return HttpResponse('Necessario estar Logado')
+    return render(request, 'tarefas/home.html')
 
 
 def logout_view(request):
@@ -50,19 +50,3 @@ def cadastrar_colaborador(request):
     return render(request, 'tarefas/cadastrar_colaborador.html', {'form': form})
 
 
-def tarefas_adicionar(request:HttpRequest):
-    if request.method == "POST":
-        formulario = TarefasForms(request.POST)
-        if formulario.is_valid():
-            formulario.save()
-            return redirect("tarefas:home")
-
-    contexto = {
-        "form":TarefasForms
-    }
-    return render(request, 'tarefas/adicionar.html',contexto)
-
-def tarefas_remover(request:HttpRequest, id):
-    tarefa = get_object_or_404(TarefasModel, id=id)
-    tarefa.delete()
-    return redirect("tarefas:home")
