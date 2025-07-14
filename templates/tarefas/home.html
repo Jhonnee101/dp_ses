@@ -25,23 +25,31 @@
         <div class="grid grid-cols-2 gap-6 md:gap-8 lg:grid-cols-4">
             <!-- Botão: Cadastrar usuários -->
             <button>
-<a href="{% url 'tarefas:cadastrar_colaborador' %}" class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus mb-3">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>
-    </svg>
-    Cadastrar Colaborador
-</a>
+            <a href="{% url 'tarefas:cadastrar_colaborador' %}" class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus mb-3">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>
+                </svg>
+                Cadastrar Colaborador
+            </a>
 
             </button>
             
 
             <!-- Botão: Listagem -->
-            <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list mb-3">
-                    <line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>
-                </svg>
-                Listagem
-            </button>
+<a href="{% url 'tarefas:listar_colaboradores' %}" 
+   class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" 
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list mb-3">
+        <line x1="8" x2="21" y1="6" y2="6"/>
+        <line x1="8" x2="21" y1="12" y2="12"/>
+        <line x1="8" x2="21" y1="18" y2="18"/>
+        <line x1="3" x2="3.01" y1="6" y2="6"/>
+        <line x1="3" x2="3.01" y1="12" y2="12"/>
+        <line x1="3" x2="3.01" y1="18" y2="18"/>
+    </svg>
+    Listagem
+</a>
+
 
             <!-- Botão: Férias -->
             <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">

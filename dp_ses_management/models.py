@@ -1,60 +1,93 @@
 from django.db import models
+from django.utils import timezone
 
 class Colaborador(models.Model):
-    # Identificação
-    registro = models.CharField(max_length=50, unique=True)
-    matricula = models.CharField(max_length=50, unique=True)
-    nome = models.CharField(max_length=100)
+    # 1. Identificação
+    # Mude para null=True, blank=True temporariamente para a primeira migração
+    registro = models.CharField(max_length=50, unique=True, verbose_name="Registro (código interno)", null=True, blank=True)
+    matricula = models.CharField(max_length=50, unique=True, verbose_name="Matrícula (código funcional)", null=True, blank=True)
+    # Adicionado um default para nome_completo para preencher registros existentes
+    nome_completo = models.CharField(max_length=150, verbose_name="Nome completo", default='Nome Padrão')
 
-    # Profissional
-    cargo = models.CharField(max_length=100)
-    funcao = models.CharField(max_length=100)
-    numero_conselho = models.CharField(max_length=50, blank=True, null=True)
-    uf_conselho = models.CharField(max_length=2, blank=True, null=True)
-    conselho = models.CharField(max_length=50, blank=True, null=True)
-    setor = models.CharField(max_length=100)
-    turno = models.CharField(max_length=50)
-    dias = models.CharField(max_length=50)
-    jornada = models.CharField(max_length=50)
-    contrato = models.CharField(max_length=50)
-    status = models.BooleanField(default=True)
-    data_admissao = models.DateField()
+    # 2. Dados Profissionais
+    CARGO_CHOICES = [
+        ('medico', 'Médico'),
+        ('enfermeiro', 'Enfermeiro'),
+        ('tec_enfermagem', 'Técnico de Enfermagem'),
+        ('aux_admin', 'Auxiliar Administrativo'),
+    ]
+    cargo = models.CharField(max_length=20, choices=CARGO_CHOICES, verbose_name="Cargo", default='aux_admin')
+    funcao = models.CharField(max_length=100, verbose_name="Função", default='')
+    numero_conselho = models.CharField(max_length=50, blank=True, null=True, verbose_name="Número do conselho profissional")
+    uf_conselho = models.CharField(max_length=2, blank=True, null=True, verbose_name="UF do conselho")
+    nome_conselho = models.CharField(max_length=100, blank=True, null=True, verbose_name="Nome do conselho")  # opcional
+    setor_trabalho = models.CharField(max_length=100, verbose_name="Setor de trabalho", default='')
+    
+    TURNO_CHOICES = [
+        ('manha', 'Manhã'),
+        ('tarde', 'Tarde'),
+        ('noite', 'Noite'),
+    ]
+    turno = models.CharField(max_length=10, choices=TURNO_CHOICES, verbose_name="Turno", default='manha')
+    
+    dias_trabalho = models.CharField(max_length=100, verbose_name="Dias de trabalho", blank=True, null=True)
+    jornada_trabalho = models.CharField(max_length=100, verbose_name="Jornada de trabalho", default='')
+    tipo_contrato = models.CharField(max_length=100, verbose_name="Tipo de contrato", default='')
 
-    # Familiares
-    nome_mae = models.CharField(max_length=100)
-    nome_pai = models.CharField(max_length=100, blank=True, null=True)
+    STATUS_CHOICES = [
+        ('ativo', 'Ativo'),
+        ('inativo', 'Inativo'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, verbose_name="Status", default='ativo')
 
-    # Pessoais
-    data_nascimento = models.DateField()
-    naturalidade = models.CharField(max_length=100)
-    estado_civil = models.CharField(max_length=50)
-    titulo_eleitoral = models.CharField(max_length=20)
-    zona = models.CharField(max_length=10)
-    secao = models.CharField(max_length=10)
-    estado = models.CharField(max_length=2)
-    rg = models.CharField(max_length=20)
-    orgao_expeditor = models.CharField(max_length=20)
-    uf_rg = models.CharField(max_length=2)
-    ctps_numero = models.CharField(max_length=20)
-    ctps_serie = models.CharField(max_length=20)
-    ctps_uf = models.CharField(max_length=2)
-    cpf = models.CharField(max_length=14, unique=True)
-    documento_militar = models.CharField(max_length=50, blank=True, null=True)
-    grau_instrucao = models.CharField(max_length=50)
-    pasep = models.CharField(max_length=20, blank=True, null=True)
+    data_admissao = models.DateField(verbose_name="Data de admissão", default=timezone.now)
 
-    # Contato
-    celular = models.CharField(max_length=20)
-    fixo = models.CharField(max_length=20, blank=True, null=True)
-    email = models.EmailField()
+    # 3. Informações Familiares
+    nome_mae = models.CharField(max_length=150, verbose_name="Nome da mãe", default='')
+    nome_pai = models.CharField(max_length=150, blank=True, null=True, verbose_name="Nome do pai")
 
-    # Endereço
-    cep = models.CharField(max_length=9)
-    endereco = models.CharField(max_length=100)
-    bairro = models.CharField(max_length=100)
-    cidade = models.CharField(max_length=100)
-    uf_endereco = models.CharField(max_length=2)
-    numero = models.CharField(max_length=10)
+    # 4. Dados Pessoais
+    data_nascimento = models.DateField(verbose_name="Data de nascimento", default=timezone.now)
+    naturalidade = models.CharField(max_length=100, verbose_name="Naturalidade (cidade/estado)", default='')
+
+    ESTADO_CIVIL_CHOICES = [
+        ('solteiro', 'Solteiro(a)'),
+        ('casado', 'Casado(a)'),
+        ('divorciado', 'Divorciado(a)'),
+        ('viuvo', 'Viúvo(a)'),
+    ]
+    estado_civil = models.CharField(max_length=10, choices=ESTADO_CIVIL_CHOICES, verbose_name="Estado civil", default='solteiro')
+
+    titulo_eleitor = models.CharField(max_length=20, blank=True, null=True, verbose_name="Título de eleitor")  # opcional
+    zona_eleitoral = models.CharField(max_length=10, blank=True, null=True, verbose_name="Zona eleitoral")  # opcional
+    secao_eleitoral = models.CharField(max_length=10, blank=True, null=True, verbose_name="Seção eleitoral")  # opcional
+    estado_vota = models.CharField(max_length=2, blank=True, null=True, verbose_name="Estado onde vota")  # opcional
+
+    rg_completo = models.CharField(max_length=50, verbose_name="RG COMPLETO (Número e texto)", default='')
+    cpf = models.CharField(max_length=14, verbose_name="CPF", default='')
+
+    numero_ctps = models.CharField(max_length=20, verbose_name="Número da CTPS", default='')
+    serie_ctps = models.CharField(max_length=20, verbose_name="Série da CTPS", default='')
+    uf_ctps = models.CharField(max_length=2, verbose_name="UF da CTPS", default='')
+
+    documento_militar = models.CharField(max_length=50, blank=True, null=True, verbose_name="Documento militar")
+
+    grau_instrucao = models.CharField(max_length=50, verbose_name="Grau de instrução", default='')
+
+    numero_pasep = models.CharField(max_length=30, blank=True, null=True, verbose_name="Número do PASEP")
+
+    # 5. Contato
+    celular = models.CharField(max_length=20, verbose_name="Celular", default='')
+    telefone_fixo = models.CharField(max_length=20, blank=True, null=True, verbose_name="Telefone fixo")
+    email = models.EmailField(verbose_name="E-mail", default='')
+
+    # 6. Endereço
+    cep = models.CharField(max_length=10, verbose_name="CEP", default='')
+    endereco = models.CharField(max_length=150, verbose_name="Endereço (rua/avenida)", default='')
+    numero = models.CharField(max_length=10, verbose_name="Número", default='')
+    bairro = models.CharField(max_length=100, verbose_name="Bairro", default='')
+    cidade = models.CharField(max_length=100, verbose_name="Cidade", default='')
+    uf = models.CharField(max_length=2, verbose_name="UF", default='')
 
     def __str__(self):
-        return f"{self.nome} ({self.matricula})"
+        return self.nome_completo
