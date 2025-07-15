@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index_view),
     path('auth/', include("dp_ses_management.urls")),
+    
 ]
 
 # Servir arquivos estáticos em modo de desenvolvimento

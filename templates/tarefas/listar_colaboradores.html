@@ -1,88 +1,119 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  {% load static %}
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lista de Colaboradores - Sistema de Gestão</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lista de Colaboradores</title>
+  <link rel="icon" href="{% static 'imagens/favicon.ico' %}" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    th.sticky {
+      position: sticky;
+      top: 0;
+      background-color: #1f2937; /* bg-gray-800 */
+      color: white;
+      z-index: 10;
+    }
+  </style>
 </head>
-<body class="bg-light">
+<body class="bg-gray-100 text-gray-800 min-h-screen px-2 pt-4">
 
-  <!-- Navbar simples -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-    <div class="container-lg">
-      <a class="navbar-brand" href="{% url 'tarefas:home' %}">Sistema de Gestão</a>
+  <div class="w-full flex flex-col min-h-[90vh]">
+
+    <!-- Título e botão -->
+<div class="flex items-center justify-between border-b pb-4 mb-6">
+  <h1 class="text-2xl font-bold">📋 Lista de Colaboradores</h1>
+  <div class="flex gap-2">
+    <a href="{% url 'tarefas:cadastrar_colaborador' %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+      ➕ Novo Colaborador
+    </a>
+    <a href="{% url 'tarefas:home' %}" class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800 transition">
+      🏠 Voltar à Home
+    </a>
+  </div>
+</div>
+
+
+    <!-- Filtros -->
+    <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 bg-white px-4 py-6 rounded shadow w-full text-base">
       <div>
-        <a href="{% url 'tarefas:cadastrar_colaborador' %}" class="btn btn-light btn-sm">+ Novo Colaborador</a>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container-lg">
-    <h2 class="mb-4">📋 Lista de Colaboradores</h2>
-
-    <form method="get" class="row g-3 mb-4">
-      <div class="col-md-4">
-        <label class="form-label">Filtrar por Setor</label>
-        <select name="setor" class="form-select">
+        <label class="block font-semibold mb-1">Setor</label>
+        <select name="setor" class="w-full border border-gray-300 rounded px-3 py-2">
           <option value="">Todos os setores</option>
           {% for setor in setores %}
             <option value="{{ setor }}" {% if filtro_setor == setor %}selected{% endif %}>{{ setor }}</option>
           {% endfor %}
         </select>
       </div>
-      <div class="col-md-4">
-        <label class="form-label">Filtrar por Status</label>
-        <select name="status" class="form-select">
+      <div>
+        <label class="block font-semibold mb-1">Status</label>
+        <select name="status" class="w-full border border-gray-300 rounded px-3 py-2">
           <option value="">Todos</option>
           <option value="ativo" {% if filtro_status == "ativo" %}selected{% endif %}>Ativo</option>
           <option value="inativo" {% if filtro_status == "inativo" %}selected{% endif %}>Inativo</option>
         </select>
       </div>
-      <div class="col-md-4 align-self-end d-flex gap-2">
-        <button type="submit" class="btn btn-primary flex-grow-1">Filtrar</button>
-        <a href="{% url 'tarefas:listar_colaboradores' %}" class="btn btn-secondary flex-grow-1">Limpar</a>
+      <div class="flex items-end gap-2">
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition w-full text-base">
+          🔍 Filtrar
+        </button>
+        <a href="{% url 'tarefas:listar_colaboradores' %}" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition w-full text-center text-base">
+          ❌ Limpar
+        </a>
       </div>
     </form>
 
-    <div class="table-responsive">
-      <table class="table table-striped table-hover align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>ID</th>
-            <th>Registro</th>
-            <th>Nome Completo</th>
-            <th>Setor de Trabalho</th>
-            <th>Status</th>
-            <th>Ações</th>
+    <!-- Tabela -->
+    <div class="flex-grow overflow-y-auto bg-white rounded shadow max-h-[65vh] text-base">
+      <table class="min-w-full table-auto text-left">
+        <thead>
+          <tr class="bg-gray-800 text-white">
+            <th class="sticky px-4 py-3">ID</th>
+            <th class="sticky px-4 py-3">Registro</th>
+            <th class="sticky px-4 py-3">Nome Completo</th>
+            <th class="sticky px-4 py-3">Função</th>
+            <th class="sticky px-4 py-3">Setor</th>
+            <th class="sticky px-4 py-3">Celular</th>
+            <th class="sticky px-4 py-3">Status</th>
+            <th class="sticky px-4 py-3">Ações</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-gray-200">
           {% for colaborador in colaboradores %}
-            <tr>
-              <td>{{ colaborador.id }}</td>
-              <td>{{ colaborador.registro }}</td>
-              <td>{{ colaborador.nome_completo }}</td>
-              <td>{{ colaborador.setor_trabalho }}</td>
-              <td>
-                <span class="badge {% if colaborador.status == 'ativo' %}bg-success{% else %}bg-danger{% endif %}">
-                  {{ colaborador.get_status_display }}
-                </span>
-              </td>
-              <td>
-                <a href="{% url 'tarefas:editar_colaborador' colaborador.id %}" class="btn btn-sm btn-warning">Editar</a>
-              </td>
-            </tr>
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3">{{ colaborador.id }}</td>
+            <td class="px-4 py-3">{{ colaborador.registro }}</td>
+            <td class="px-4 py-3">{{ colaborador.nome_completo }}</td>
+            <td class="px-4 py-3">{{ colaborador.funcao }}</td>
+            <td class="px-4 py-3">{{ colaborador.setor_trabalho }}</td>
+            <td class="px-4 py-3">{{ colaborador.celular }}</td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center px-2 py-1 rounded text-sm font-medium
+                {% if colaborador.status == 'ativo' %}
+                  bg-green-100 text-green-800
+                {% else %}
+                  bg-red-100 text-red-800
+                {% endif %}">
+                {% if colaborador.status == 'ativo' %}✔{% else %}❌{% endif %}
+                &nbsp;{{ colaborador.get_status_display }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <a href="{% url 'tarefas:editar_colaborador' colaborador.id %}" class="bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500 transition text-sm">
+                ✏️ Editar
+              </a>
+            </td>
+          </tr>
           {% empty %}
-            <tr>
-              <td colspan="6" class="text-center">Nenhum colaborador encontrado.</td>
-            </tr>
+          <tr>
+            <td colspan="8" class="text-center py-4 text-gray-500">Nenhum colaborador encontrado.</td>
+          </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </div>
 </body>
 </html>
