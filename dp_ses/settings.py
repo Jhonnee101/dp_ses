@@ -76,8 +76,12 @@ WSGI_APPLICATION = 'dp_ses.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'dba.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dp_ses',
+        'USER': 'joaob',
+        'PASSWORD': '36457454',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
