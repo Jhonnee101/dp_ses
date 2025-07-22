@@ -77,11 +77,11 @@ WSGI_APPLICATION = 'dp_ses.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dp_ses',
-        'USER': 'joaob',
-        'PASSWORD': '36457454',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': 'dp_ses',               # O nome do banco que você criou
+        'USER': 'joaob',                # Usuário do banco (igual ao que você passou no docker)
+        'PASSWORD': '36457454',         # Senha do banco
+        'HOST': 'localhost',            # Se rodar localmente no seu PC (docker no mesmo host)
+        'PORT': '5432',                 # Porta exposta do container (5432 no seu caso)
     }
 }
 
