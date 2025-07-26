@@ -9,19 +9,3 @@
 /env/
 /.env/
 
-# --- Cache e Arquivos Compilados do Python ---
-# Ignora a pasta de cache e arquivos de bytecode.
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# --- Arquivos de IDEs e Editores (Opcional) ---
-# Mantém as configurações pessoais do seu editor fora do repositório.
-.vscode/
-.idea/
-
-# --- Arquivos Sensíveis (Recomendado) ---
-# NUNCA envie senhas ou chaves de API.
-.env
-*.env
