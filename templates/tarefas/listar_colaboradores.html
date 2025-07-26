@@ -70,7 +70,7 @@
         <thead>
           <tr class="bg-gray-800 text-white">
             <th class="sticky px-4 py-3">ID</th>
-            <th class="sticky px-4 py-3">Registro</th>
+            <th class="sticky px-4 py-3">Matricula</th>
             <th class="sticky px-4 py-3">Nome Completo</th>
             <th class="sticky px-4 py-3">Função</th>
             <th class="sticky px-4 py-3">Setor</th>
@@ -83,7 +83,7 @@
           {% for colaborador in colaboradores %}
           <tr class="hover:bg-gray-50">
             <td class="px-4 py-3">{{ colaborador.id }}</td>
-            <td class="px-4 py-3">{{ colaborador.registro }}</td>
+            <td class="px-4 py-3">{{ colaborador.matricula }}</td>
             <td class="px-4 py-3">{{ colaborador.nome_completo }}</td>
             <td class="px-4 py-3">{{ colaborador.funcao }}</td>
             <td class="px-4 py-3">{{ colaborador.setor_trabalho }}</td>
