@@ -13,110 +13,55 @@
             font-family: "Inter", sans-serif;
         }
 
-        /* --- Estilos do Modal (copiados do exemplo anterior) --- */
-        .modal {
-            display: none; /* Escondido por padrão */
-            position: fixed; /* Fica por cima de tudo */
-            z-index: 1000; /* Alto z-index */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto; /* Habilita scroll se necessário */
-            background-color: rgba(0,0,0,0.6); /* Fundo semi-transparente */
-            justify-content: center;
-            align-items: center;
+        /* --- Estilos para as mensagens do Django (messages) --- */
+        .message-success {
+            background-color: #d1fae5; /* green-100 */
+            border-left: 4px solid #34d399; /* green-500 */
+            color: #065f46; /* green-800 */
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
-        .modal.is-open {
-            display: flex; /* Exibe o modal */
+        .message-error {
+            background-color: #fee2e2; /* red-100 */
+            border-left: 4px solid #ef4444; /* red-500 */
+            color: #991b1b; /* red-800 */
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
-
-        .modal-content {
-            background-color: #fff;
-            margin: auto; /* Centraliza vertical e horizontalmente */
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px; /* Largura máxima para o conteúdo */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative;
-            animation-name: animatetop;
-            animation-duration: 0.4s;
+        .message-info {
+            background-color: #e0f2fe; /* blue-100 */
+            border-left: 4px solid #3b82f6; /* blue-500 */
+            color: #1e40af; /* blue-800 */
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
-
-        /* Animação para o modal */
-        @keyframes animatetop {
-            from {top: -300px; opacity: 0}
-            to {top: 0; opacity: 1}
-        }
-
-        /* Botão de fechar o modal */
-        .close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            position: absolute;
-            top: 10px;
-            right: 20px;
-        }
-        .close-button:hover,
-        .close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Estilos do Formulário dentro do modal */
-        .modal-content h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-        }
-        .modal-content label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-        .modal-content input, .modal-content select {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-        .modal-content input:focus, .modal-content select:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
-        }
-        .modal-content button[type="submit"] {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            width: 100%;
-            transition: background-color 0.3s ease;
-        }
-        .modal-content button[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-        /* --- Fim dos Estilos do Modal --- */
     </style>
 </head>
-<body class="bg-white min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="w-full max-w-5xl bg-white rounded-lg p-8 md:p-10">
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-5xl bg-white rounded-lg p-8 md:p-10 shadow-lg">
         <h1 class="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-10 md:mb-14 rounded-lg p-6 bg-blue-50 shadow-sm">
             Bem-vindo(a), <span id="userName">{{ user.first_name|default:user.username }}</span>!
         </h1>
 
-        <div class="grid grid-cols-2 gap-6 md:gap-8 lg:grid-cols-4">
+        {# Mensagens do Django #}
+        {% if messages %}
+            <div class="messages mb-8">
+                {% for message in messages %}
+                    <div class="message-{{ message.tags }} {% if message.tags == 'error' %}message-error{% elif message.tags == 'success' %}message-success{% else %}message-info{% endif %}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {# ALTERAÇÃO AQUI: Ajuste das classes de grid para 3 por 3 #}
+        <div class="grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-8 lg:grid-cols-3">
             <a href="{% url 'tarefas:cadastrar_colaborador' %}" class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus mb-3">
                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>
@@ -124,18 +69,13 @@
                 Cadastrar Colaborador
             </a>
 
-            <a href="{% url 'tarefas:listar_colaboradores' %}" 
+            <a href="{% url 'tarefas:listar_colaboradores' %}"
                class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" 
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list mb-3">
-                    <line x1="8" x2="21" y1="6" y2="6"/>
-                    <line x1="8" x2="21" y1="12" y2="12"/>
-                    <line x1="8" x2="21" y1="18" y2="18"/>
-                    <line x1="3" x2="3.01" y1="6" y2="6"/>
-                    <line x1="3" x2="3.01" y1="12" y2="12"/>
-                    <line x1="3" x2="3.01" y1="18" y2="18"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users mb-3">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
-                Listagem
+                Lista Geral
             </a>
 
             <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
@@ -145,31 +85,11 @@
                 Férias
             </button>
 
-            <button
-                id="btnAbrirModal" {# Adicionado ID para o JavaScript #}
-                class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check mb-3">
-                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                    <path d="m9 14 2 2 4-4" />
-                </svg>
-                Folha de ponto
-            </button>
-
-
             <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cake mb-3">
                     <path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1"/><path d="M2 21h20"/><path d="M7 11V7a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v4"/>
                 </svg>
                 Aniversariantes do mês
-            </button>
-
-            <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users mb-3">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-                Lista Geral
             </button>
 
             <button class="flex flex-col items-center justify-center p-6 md:p-8 bg-blue-200 text-blue-800 text-lg font-semibold rounded-xl shadow-md hover:bg-blue-300 transition duration-300 ease-in-out transform hover:scale-105 text-center">
@@ -188,145 +108,11 @@
         </div>
     </div>
 
-    <div id="folhaPontoModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>Preencher Dados da Folha de Ponto</h2>
-            <form id="formGerarPDF">
-                {% csrf_token %} {# MUITO IMPORTANTE para segurança no Django #}
-
-                <label for="id_colaborador">Colaborador:</label>
-                <input type="text" id="id_colaborador" name="colaborador" required>
-
-                <label for="id_matricula">Matrícula:</label>
-                <input type="text" id="id_matricula" name="matricula" required>
-
-                <label for="id_setor">Setor:</label>
-                <input type="text" id="id_setor" name="setor" required>
-
-                <label for="id_cargo">Cargo:</label>
-                <input type="text" id="id_cargo" name="cargo" required>
-
-                <label for="id_mes">Mês:</label>
-                <select id="id_mes" name="mes" required>
-                    <option value="">Selecione o Mês</option>
-                    <option value="Janeiro">Janeiro</option>
-                    <option value="Fevereiro">Fevereiro</option>
-                    <option value="Março">Março</option>
-                    <option value="Abril">Abril</option>
-                    <option value="Maio">Maio</option>
-                    <option value="Junho">Junho</option>
-                    <option value="Julho">Julho</option>
-                    <option value="Agosto">Agosto</option>
-                    <option value="Setembro">Setembro</option>
-                    <option value="Outubro">Outubro</option>
-                    <option value="Novembro">Novembro</option>
-                    <option value="Dezembro">Dezembro</option>
-                </select>
-
-                <label for="id_ano">Ano:</label>
-                <input type="number" id="id_ano" name="ano" min="1900" max="2100" value="2025" required>
-
-                <button type="submit">Baixar Folha de Ponto</button>
-            </form>
-        </div>
-    </div>
-
     <script>
-        // Função para simular a inserção do nome do usuário (no Django, você passaria isso pelo contexto)
         window.onload = function() {
             const userNameElement = document.getElementById('userName');
-            // Exemplo: Substitua 'Nome do Usuário' pela variável do Django, por exemplo: "{{ user.first_name }}"
-            // Para testar no navegador, você pode definir um nome fixo ou usar um prompt
-            // userNameElement.textContent = prompt("Digite seu nome:", "Usuário");
+            // Este script pode ser removido se não houver outra função para ele.
         };
-
-        // --- JavaScript para o Modal (copiado do exemplo anterior) ---
-        const modal = document.getElementById('folhaPontoModal');
-        const btnAbrirModal = document.getElementById('btnAbrirModal'); // O botão que você adicionou
-        const closeButton = document.querySelector('.close-button');
-        const formGerarPDF = document.getElementById('formGerarPDF');
-
-        // Abre o modal quando o botão "Folha de Ponto" é clicado
-        btnAbrirModal.onclick = function() {
-            modal.classList.add('is-open');
-        }
-
-        // Fecha o modal ao clicar no 'x'
-        closeButton.onclick = function() {
-            modal.classList.remove('is-open');
-        }
-
-        // Fecha o modal ao clicar fora da área de conteúdo do modal
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.classList.remove('is-open');
-            }
-        }
-
-        // Lógica para enviar o formulário via AJAX e baixar o PDF
-        formGerarPDF.addEventListener('submit', function(event) {
-            event.preventDefault(); // Impede o envio padrão do formulário (recarregar a página)
-
-            const formData = new FormData(this); // Coleta os dados do formulário
-            // Use o nome da URL do Django, com namespace se tiver
-            const url = "{% url 'tarefas:gerar_pdf_folha_ponto' %}"; 
-
-            fetch(url, {
-                method: 'POST',
-                body: formData, // Envia os dados do formulário
-                headers: {
-                    // O token CSRF é importante para segurança
-                    'X-CSRFToken': formData.get('csrfmiddlewaretoken') 
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    // Se a resposta não for OK (ex: 404, 500), tenta ler a mensagem de erro
-                    return response.text().then(text => { 
-                        let errorMessage = `Erro do servidor (${response.status}): ${text}`;
-                        try {
-                            // Tenta parsear como JSON se o servidor retornar um JSON de erro
-                            const jsonError = JSON.parse(text);
-                            errorMessage = jsonError.message || errorMessage;
-                        } catch (e) {
-                            // Não é JSON, usa o texto puro
-                        }
-                        throw new Error(errorMessage);
-                    });
-                }
-                // Se for OK, verifica o cabeçalho Content-Disposition para o nome do arquivo
-                const contentDisposition = response.headers.get('Content-Disposition');
-                let filename = 'folha_de_ponto.pdf'; // Nome padrão
-                if (contentDisposition && contentDisposition.indexOf('filename=') !== -1) {
-                    // Extrai o nome do arquivo do cabeçalho
-                    const filenameMatch = contentDisposition.match(/filename\*?=["']?(?:UTF-8'')?([^;"\n\r]+)["']?/);
-                    if (filenameMatch && filenameMatch[1]) {
-                        filename = decodeURIComponent(filenameMatch[1]);
-                    }
-                }
-                return response.blob().then(blob => ({ blob, filename })); // Pega o conteúdo como Blob
-            })
-            .then(({ blob, filename }) => {
-                // Cria um URL temporário para o Blob
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = filename; // Define o nome do arquivo para download
-                document.body.appendChild(a);
-                a.click(); // Simula um clique para iniciar o download
-                window.URL.revokeObjectURL(url); // Libera o URL temporário
-
-                modal.classList.remove('is-open'); // Fecha o modal após o download
-                alert('Folha de ponto gerada e baixada com sucesso!');
-            })
-            .catch(error => {
-                console.error('Erro ao gerar ou baixar o PDF:', error);
-                alert('Ocorreu um erro ao gerar a folha de ponto. Tente novamente. Detalhes: ' + error.message);
-            });
-        });
-        // --- Fim do JavaScript para o Modal ---
     </script>
 </body>
 </html>
