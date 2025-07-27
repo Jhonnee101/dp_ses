@@ -1,14 +1,22 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout
 from .models import Colaborador
-import logging
-from django.http import HttpResponse # Mantido caso precise para outras respostas
+from django.http import HttpResponse 
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_django
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages # Import messages for user feedback
+from django.contrib import messages
+import logging 
+logger = logging.getLogger(__name__)
 
-# --- Suas views existentes (com as correções e melhorias, sem folha de ponto) ---
+# --- Importações para manipulação de PDF (Adicionadas/Verificadas) ---
+from PyPDF2 import PdfReader, PdfWriter # Certifique-se que PyPDF2 está instalado (pip install pypdf2)
+from reportlab.pdfgen import canvas # Certifique-se que reportlab está instalado (pip install reportlab)
+from reportlab.lib.pagesizes import A4
+from io import BytesIO
+import os
+from django.conf import settings # Para acessar BASE_DIR
+
 
 def login(request):
     if request.method == "GET":
@@ -188,3 +196,116 @@ def listar_colaboradores(request):
     }
     return render(request, 'tarefas/listar_colaboradores.html', context)
 
+@login_required(login_url='/auth/login/')
+def folha_de_ponto_selecao(request, id):
+    colaborador = get_object_or_404(Colaborador, registro=id)
+
+    meses = [
+        {'value': '01', 'name': 'Janeiro'}, {'value': '02', 'name': 'Fevereiro'}, 
+        {'value': '03', 'name': 'Março'}, {'value': '04', 'name': 'Abril'}, 
+        {'value': '05', 'name': 'Maio'}, {'value': '06', 'name': 'Junho'}, 
+        {'value': '07', 'name': 'Julho'}, {'value': '08', 'name': 'Agosto'}, 
+        {'value': '09', 'name': 'Setembro'}, {'value': '10', 'name': 'Outubro'}, 
+        {'value': '11', 'name': 'Novembro'}, {'value': '12', 'name': 'Dezembro'}, 
+    ]
+    current_year = timezone.now().year 
+    anos = list(range(current_year - 5, current_year + 6))
+
+    context = {
+        'colaborador': colaborador,
+        'meses': meses,
+        'anos': anos,
+        'current_year': current_year,
+    }
+    return render(request, 'tarefas/folha_de_ponto_selecao.html', context)
+
+@login_required(login_url='/auth/login/')
+def gerar_folha_ponto_pdf(request):
+    if request.method == 'POST':
+        colaborador_id = request.POST.get('colaborador_id')
+        mes_num = request.POST.get('mes') 
+        ano = request.POST.get('ano')
+
+        colaborador_obj = get_object_or_404(Colaborador, registro=colaborador_id)
+        
+        colaborador_nome = colaborador_obj.nome_completo
+        matricula = colaborador_obj.matricula
+        setor = colaborador_obj.get_setor_trabalho_display() 
+        cargo = colaborador_obj.get_cargo_display()       
+
+        meses_nomes = {
+            '01': 'Janeiro', '02': 'Fevereiro', '03': 'Março', '04': 'Abril',
+            '05': 'Maio', '06': 'Junho', '07': 'Julho', '08': 'Agosto',
+            '09': 'Setembro', '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro',
+        }
+        mes_nome = meses_nomes.get(mes_num, mes_num)
+
+        caminho_pdf_modelo = os.path.join(settings.BASE_DIR, 'dp_ses_management', 'static', 'documentos', 'folha_de_ponto.pdf')
+
+        if not os.path.exists(caminho_pdf_modelo):
+            messages.error(request, "Erro: Arquivo PDF modelo não encontrado no servidor.")
+            logger.error(f"Arquivo PDF modelo não encontrado: {caminho_pdf_modelo}")
+            return redirect('tarefas:listar_colaboradores')
+
+        try:
+            # --- Cria o PDF com o texto (overlay) ---
+            packet = BytesIO()
+            can = canvas.Canvas(packet, pagesize=A4)
+
+            can.setFont("Helvetica-Bold", 11)
+            # Estas são as coordenadas que você precisará ajustar para o seu PDF
+            can.drawString(70, 679, colaborador_nome) 
+            can.drawString(430, 679, matricula)
+            can.drawString(75, 651, cargo)
+            can.drawString(405, 651, setor)
+            
+            can.setFont("Helvetica-Bold", 13)
+            can.drawString(500, 172, f"{mes_nome}/{ano}") 
+            
+            can.save()
+            packet.seek(0)
+            novo_conteudo = PdfReader(packet) # Variável definida aqui
+
+            # --- DEBUG: Verifique se o overlay tem páginas ---
+            print(f"DEBUG: Novo conteúdo (overlay) tem páginas? {len(novo_conteudo.pages) > 0}")
+
+            # --- Abre o PDF Modelo e Mescla ---
+            with open(caminho_pdf_modelo, "rb") as f_modelo:
+                modelo_pdf = PdfReader(f_modelo)
+                
+                # VERIFICAÇÃO ADICIONAL: Certifique-se de que o modelo tem páginas
+                if not modelo_pdf.pages:
+                    messages.error(request, "Erro: O arquivo PDF modelo não contém páginas visíveis para processamento.")
+                    logger.error(f"PDF Modelo '{caminho_pdf_modelo}' não tem páginas detectáveis por PyPDF2.")
+                    return redirect('tarefas:listar_colaboradores')
+                
+                # --- DEBUG: Verifique se o modelo tem páginas ---
+                print(f"DEBUG: PDF Modelo tem páginas? {len(modelo_pdf.pages) > 0}")
+
+                output = PdfWriter()
+
+                for i in range(len(modelo_pdf.pages)):
+                    page = modelo_pdf.pages[i]
+                    if i == 0: 
+                        # CORRIGIDO AQUI: Usando 'novo_conteudo' (a variável correta)
+                        page.merge_page(novo_conteudo.pages[0]) 
+                    output.add_page(page)
+
+                response_buffer = BytesIO()
+                output.write(response_buffer)
+                response_buffer.seek(0)
+
+                filename = f"Folha_Ponto_{colaborador_nome.replace(' ', '_')}_{mes_nome}_{ano}.pdf"
+                response = HttpResponse(response_buffer.getvalue(), content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+                messages.success(request, f"Folha de Ponto de {colaborador_nome} para {mes_nome}/{ano} gerada com sucesso!")
+                return response
+
+        except Exception as e:
+            messages.error(request, f"Erro ao gerar a folha de ponto. Detalhes: {e}. Por favor, verifique se o PDF modelo não está corrompido ou protegido.")
+            logger.error(f"Erro ao gerar PDF da folha de ponto para {colaborador_nome}: {e}", exc_info=True)
+            return redirect('tarefas:folha_de_ponto_selecao', id=colaborador_id) 
+
+    messages.error(request, "Requisição inválida para gerar o PDF da folha de ponto.")
+    return redirect('tarefas:listar_colaboradores')

@@ -94,6 +94,56 @@
         .btn-action-pontos:hover {
             background-color: #2563eb; /* Tailwind blue-600 */
         }
+
+        /* Estilos para o Modal */
+        .modal {
+            /* CORRIGIDO AQUI: display: none; */
+            display: none; /* Hidden by default */ 
+            position: fixed; /* Stay in place */
+            z-index: 100; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.7); /* Black w/ opacity */
+            /* display: flex; REMOVIDO DAQUI, AGORA SERÁ APLICADO POR JS */
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Adicione esta regra CSS para quando o modal estiver aberto */
+        .modal.is-active {
+            display: flex; 
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen px-2 pt-4">
@@ -122,9 +172,8 @@
             </div>
         {% endif %}
 
-        {# ALTERAÇÃO AQUI: Form de Filtro agora com campo de busca por nome #}
         <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-white p-6 rounded-lg shadow-md w-full text-base"> 
-            <div class="col-span-full md:col-span-2"> {# Ocupa 2 colunas em telas medias e todas em pequenas #}
+            <div class="col-span-full md:col-span-2">
                 <label for="id_busca_nome" class="block font-semibold mb-1 text-gray-700">Buscar por Nome</label>
                 <input type="text" id="id_busca_nome" name="busca_nome" 
                        value="{{ filtro_busca_nome }}" 
@@ -150,7 +199,7 @@
                     <option value="afastado" {% if filtro_status == "afastado" %}selected{% endif %}>Afastado</option>
                 </select>
             </div>
-            <div class="flex items-end gap-3 mt-auto col-span-full"> {# Col span full para que os botões fiquem em uma nova linha #}
+            <div class="flex items-end gap-3 mt-auto col-span-full">
                 <button type="submit" class="btn-success w-full text-base">
                     🔍 Filtrar / Buscar
                 </button>
@@ -206,9 +255,9 @@
                                 <a href="{% url 'tarefas:editar_colaborador' colaborador.registro %}" class="btn-action-edit">
                                     ✏️ Editar
                                 </a>
-                                <a href="{% url 'tarefas:editar_colaborador' colaborador.registro %}" class="btn-action-pontos">
-                                    📋 Folha de Ponto
-                                 </a> 
+                                <button type="button" class="btn-action-pontos" onclick="openFolhaPontoModal('{{ colaborador.registro }}')">
+                                     📋 Folha de Ponto
+                                 </button>
                             {% else %}
                                 <span class="text-gray-500 text-sm">Registro inválido</span>
                             {% endif %}
@@ -223,5 +272,96 @@
             </table>
         </div>
     </div>
+
+    <div id="folhaPontoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeFolhaPontoModal()">&times;</span>
+            <h2 class="text-2xl font-bold mb-4 text-gray-900">Gerar Folha de Ponto</h2>
+            <p class="mb-4 text-gray-700">Selecione o mês e o ano de referência para a folha de ponto.</p>
+
+            <form id="formGerarFolhaPonto" method="POST" action="{% url 'tarefas:gerar_folha_ponto_pdf' %}">
+                {% csrf_token %}
+                <input type="hidden" name="colaborador_id" id="modalColaboradorId">
+
+                <div class="mb-4">
+                    <label for="modalMes" class="block text-sm font-medium text-gray-700 mb-1">Mês:</label>
+                    <select id="modalMes" name="mes" required
+                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                        <option value="01">Janeiro</option>
+                        <option value="02">Fevereiro</option>
+                        <option value="03">Março</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Maio</option>
+                        <option value="06">Junho</option>
+                        <option value="07">Julho</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Setembro</option>
+                        <option value="10">Outubro</option>
+                        <option value="11">Novembro</option>
+                        <option value="12">Dezembro</option>
+                    </select>
+                </div>
+
+                <div class="mb-6">
+                    <label for="modalAno" class="block text-sm font-medium text-gray-700 mb-1">Ano:</label>
+                    <select id="modalAno" name="ano" required
+                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                        {# Anos serão preenchidos via JS #}
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeFolhaPontoModal()" class="btn-secondary">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        Gerar PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Função para preencher os anos no dropdown do modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const anoSelect = document.getElementById('modalAno');
+            const currentYear = new Date().getFullYear();
+            // Gera anos, por exemplo, de 10 anos atrás até 5 anos no futuro
+            for (let i = currentYear - 10; i <= currentYear + 5; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                if (i === currentYear) {
+                    option.selected = true; // Seleciona o ano atual por padrão
+                }
+                anoSelect.appendChild(option);
+            }
+
+            // Define o mês atual como padrão no modal ao carregar a página
+            const monthSelect = document.getElementById('modalMes');
+            const currentMonth = (new Date().getMonth() + 1).toString().padStart(2, '0');
+            monthSelect.value = currentMonth;
+        });
+
+        // Função para abrir o modal
+        function openFolhaPontoModal(colaboradorId) {
+            document.getElementById('modalColaboradorId').value = colaboradorId;
+            document.getElementById('folhaPontoModal').classList.add('is-active'); // Adiciona a classe para mostrar o modal
+        }
+
+        // Função para fechar o modal
+        function closeFolhaPontoModal() {
+            document.getElementById('folhaPontoModal').classList.remove('is-active'); // Remove a classe para esconder o modal
+        }
+
+        // Fecha o modal se o usuário clicar fora do conteúdo do modal
+        window.onclick = function(event) {
+            const modal = document.getElementById('folhaPontoModal');
+            if (event.target == modal) {
+                closeFolhaPontoModal(); // Usa a função existente para fechar
+            }
+        }
+    </script>
 </body>
 </html>
